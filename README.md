@@ -1,4 +1,3 @@
-```
 # 🐳 Docker Learning Journal
 
 > A personal learning journal documenting my journey learning Docker as part of my DevOps career switch bootcamp.
@@ -51,5 +50,4 @@ docker-learning/
 ---
 
 *This repo is part of my DevOps learning journey. Updated regularly as I progress through the bootcamp* 🚀
-```
 
