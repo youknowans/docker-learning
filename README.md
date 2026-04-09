@@ -1,4 +1,6 @@
-Docker Learning
+Docker Learnig
+```
+docker-learning/
 │
 ├── README.md                  ← Overview of the repo
 │
@@ -12,3 +14,4 @@ Docker Learning
 │   └── nginx-container/       ← Hands on projects go here
 │
 └── cheatsheet.md              ← Quick reference commands
+```
