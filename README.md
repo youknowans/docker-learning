@@ -22,6 +22,11 @@ docker-learning/
 │   ├── 02-basic-commands.md   ← Essential Docker commands
 │   ├── 03-dockerfile.md       ← Writing Dockerfiles
 │   └── 04-docker-compose.md   ← Running multiple containers
+│ 
+├── quizzes/
+│   ├── 01-core-concepts.md    ← What Docker is and key concepts
+│   ├── 02-basic-commands.md   ← Essential Docker commands
+│   ├── 03-dockerfile.md       ← Writing Dockerfile
 │
 ├── projects/
 │   └── nginx-container/       ← Hands on projects
