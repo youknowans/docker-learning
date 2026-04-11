@@ -221,4 +221,4 @@ A **recipe** (Dockerfile) contains the instructions, and the **meal** (Image) is
 
 ---
 
-*Next up → [02 - Basic Docker Commands](./02-basic-commands.md)* 🚀
+*Next up → [02 - Basic Docker Commands](./02-basic-docker-commands.md)* 🚀
