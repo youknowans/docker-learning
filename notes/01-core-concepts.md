@@ -194,5 +194,5 @@ Dockerfile  →   Docker Image  →   Docker Hub   →   Container
 
 ---
 
-*Next up → [02 - Basic Docker Commands](./02-basic-commands.md)* 🚀
+*Next up → [02 - Basic Docker Commands](./02-basic-docker-commands.md)* 🚀
 
