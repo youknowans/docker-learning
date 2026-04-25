@@ -383,4 +383,4 @@ CMD ["python", "app.py"]
 
 ---
 
-*Next up → [03 - Docker Netowrking](./03-docker-networkinge.md)* 🚀
+*Next up → [03 - Docker Netowrking](./03-docker-networking.md)* 🚀
