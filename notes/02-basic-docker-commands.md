@@ -278,4 +278,4 @@ docker system prune
 
 ---
 
-*Next up → [03 - Dockerfile](./03-dockerfile.md)* 🚀
+*Next up → [03 - Docker Networking](./03-docker-networking.md)* 🚀
