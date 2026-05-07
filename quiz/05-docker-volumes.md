@@ -1,147 +1,121 @@
-# 💾 05 — Docker Volumes
+# 🌶️ Docker Volumes — Quiz
 
-> My notes on Docker Volumes written in plain English as part of my DevOps bootcamp journey.
-
----
-
-## 📌 Table of Contents
-
-- [What is a Docker Volume?](#what-is-a-docker-volume)
-- [The Three Ways to Mount Data](#the-three-ways-to-mount-data)
-- [Volumes vs Bind Mounts](#volumes-vs-bind-mounts)
-- [Volume Commands](#volume-commands)
-- [Using Volumes with docker run](#using-volumes-with-docker-run)
-- [Using Volumes in Docker Compose](#using-volumes-in-docker-compose)
-- [Bind Mounts for Development](#bind-mounts-for-development)
-- [Development vs Production Setup](#development-vs-production-setup)
-- [docker compose down vs down -v](#docker-compose-down-vs-down--v)
-- [Common Mistakes](#common-mistakes)
-- [Quick Summary](#quick-summary)
+> A self-test quiz covering Docker Volumes concepts including named volumes, bind mounts and persistent data.
+> Completed as part of my DevOps bootcamp journey.
 
 ---
 
-## What is a Docker Volume?
+## 📌 How to Use This Quiz
 
-Containers are **ephemeral** — when a container is deleted everything inside it is gone. But some data needs to survive:
-
-- 🗄️ Database records
-- 📁 Uploaded files
-- 📝 Log files
-- ⚙️ Config files
-
-**Docker Volumes** solve this by storing data OUTSIDE the container!
-
-> 🏨 **Analogy:** Think of a container like a **hotel room** — when you check out the room is wiped clean for the next guest. A volume is like a **storage locker in the hotel lobby** — you can check out of any room but your stuff stays safely in the locker!
+1. Read each question and scenario carefully
+2. Write down or think about your answer
+3. Once you've answered all questions scroll down to the **Answers & Explanations** section at the bottom
 
 ---
 
-## The Three Ways to Mount Data
-
-### 1. Volumes (Managed by Docker) ✅
-Docker manages everything — storage lives in Docker's own area on your machine:
-
-```bash
-# Create a volume
-docker volume create my-data
-
-# Use it when running a container
-docker run -d \
-  --name my-db \
-  -v my-data:/var/lib/mysql \
-  mysql:5.7
-```
-
-### 2. Bind Mounts (You manage the path)
-You specify an exact folder on your machine to mount into the container:
-
-```bash
-docker run -d \
-  -v /home/user/mydata:/var/lib/mysql \
-  mysql:5.7
-```
-
-> 📁 Like plugging a specific folder on your laptop directly into the container!
-
-### 3. tmpfs Mounts (In memory only)
-Stored in memory — not on disk at all. Gone when container stops:
-
-```bash
-docker run -d \
-  --tmpfs /app/temp \
-  my-app
-```
-
-> 🧠 Used for sensitive temporary data you don't want written to disk!
+## ❓ Questions
 
 ---
 
-## Volumes vs Bind Mounts
+### Question 1 — Data Loss Scenario 💥
 
-| | Volumes | Bind Mounts |
-|--|---------|------------|
-| **Managed by** | Docker | You |
-| **Location** | Docker's storage area | Anywhere on your machine |
-| **Portability** | ✅ Works anywhere | ❌ Path must exist on host |
-| **Best for** | Databases, persistent data | Development — live code editing |
-| **Performance** | ✅ Optimised | Good |
-| **Recommended** | ✅ Production | Development |
-
-**Easy way to tell them apart in a command:**
-```bash
--v my-data:/var/lib/mysql          # left = name → Docker Volume ✅
--v /home/ansaff/mydata:/var/lib/mysql  # left = path starting with / → Bind Mount ✅
-```
-
-> 🧠 Starts with `/` → bind mount. Just a name → Docker volume!
-
----
-
-## Volume Commands
-
-```bash
-# Create a volume
-docker volume create my-data
-
-# List all volumes
-docker volume ls
-
-# Inspect a volume — see where Docker stores the data
-docker volume inspect my-data
-
-# Remove a volume
-docker volume rm my-data
-
-# Remove ALL unused volumes
-docker volume prune
-```
-
-> ⚠️ Volumes don't appear in your normal laptop folders — Docker stores them in its own area. Use `docker volume inspect` to find the `Mountpoint` if you need to see where!
-
----
-
-## Using Volumes with docker run
-
-The `-v` flag maps a volume to a path inside the container:
+You run this command:
 
 ```bash
 docker run -d \
   --name my-db \
-  -v my-data:/var/lib/mysql \
+  -e MYSQL_ROOT_PASSWORD=password \
   mysql:5.7
 ```
 
-| Part | Meaning |
-|------|---------|
-| `my-data` | Volume name — Docker manages this |
-| `/var/lib/mysql` | Path inside the container where MySQL stores data |
+No volume is specified. You add 1000 records to the database then run `docker rm -f my-db`.
 
-> ⚠️ The right side path must match where the app actually stores its data inside the container!
+**What happens to the 1000 records?**
+
+- A) They are saved automatically by Docker
+- B) They are completely gone — no volume means data lives inside the container
+- C) They are backed up to Docker Hub
+- D) They are saved in the current folder on your laptop
 
 ---
 
-## Using Volumes in Docker Compose
+### Question 2 — Volume vs Bind Mount 🌶️
 
-Two parts are required — both must be present for volumes to work:
+What is the difference between these two commands?
+
+```bash
+# Command A
+docker run -d \
+  -v my-data:/var/lib/mysql \
+  mysql:5.7
+
+# Command B
+docker run -d \
+  -v /home/ansaff/mydata:/var/lib/mysql \
+  mysql:5.7
+```
+
+- A) No difference — they both do the same thing
+- B) Command A uses a Docker managed volume. Command B uses a bind mount — a specific folder on your laptop
+- C) Command A uses a bind mount. Command B uses a Docker managed volume
+- D) Command A only works on Linux. Command B works on any OS
+
+---
+
+### Question 3 — Development Setup 🔥
+
+You are setting up a development environment for your Flask app. You want to edit code on your laptop and see changes instantly without rebuilding the image.
+
+**Which approach do you use?**
+
+- A) Docker Volume — mount a named volume into the container
+- B) Bind Mount — mount your laptop code folder directly into the container
+- C) No mount needed — just rebuild the image every time you change code
+- D) tmpfs mount — store the code in memory
+
+---
+
+### Question 4 — Trick Question 🌀
+
+You have this docker-compose.yml:
+
+```yaml
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5002:5002"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
+```
+
+You run `docker compose up -d` and add 500 records to the database.
+Then you run `docker compose down` and `docker compose up -d` again.
+
+**Are the 500 records still there?**
+
+- A) No — docker compose down always deletes everything including volumes
+- B) Yes — the volume persists data even after docker compose down
+- C) No — you need to run docker compose restart to keep data
+- D) Yes — but only the first 100 records are saved
+
+---
+
+### Question 5 — Missing Piece 🌶️🌶️
+
+A colleague shows you this docker-compose.yml:
 
 ```yaml
 version: '3'
@@ -150,21 +124,25 @@ services:
   db:
     image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_ROOT_PASSWORD: password
     volumes:
-      - db-data:/var/lib/mysql    # PART 1 — mount into the service
-
-volumes:
-  db-data:                        # PART 2 — define the volume here!
+      - db-data:/var/lib/mysql
 ```
 
-> ⚠️ A very common mistake is defining the volume in the service but forgetting to declare it at the bottom — always need BOTH parts!
+They say *"Something is wrong — the volume isn't working and data keeps disappearing!"*
+
+**What is the problem?**
+
+- A) The volume path /var/lib/mysql is wrong
+- B) The volume db-data is mounted in the service but never defined at the bottom of the file under volumes:
+- C) The MySQL image doesn't support volumes
+- D) The environment variable name is wrong
 
 ---
 
-## Bind Mounts for Development
+### Question 6 — Dev vs Production 🌶️🌶️🌶️
 
-Bind mounts let you edit code on your laptop and see changes instantly without rebuilding the image:
+A colleague shows you this docker-compose.yml:
 
 ```yaml
 version: '3'
@@ -175,148 +153,289 @@ services:
     ports:
       - "5002:5002"
     volumes:
-      - .:/app    # mount current folder into /app in container
-```
-
-Now when you edit `app.py` on your laptop the container sees the changes immediately — no `docker compose up -d --build` needed! ✅
-
-> 🔥 This is how most developers work locally — bind mount the code in, use volumes for the database!
-
----
-
-## Development vs Production Setup
-
-A complete development setup combining everything:
-
-```yaml
-version: '3'
-
-services:
-  web:
-    build: .
-    ports:
-      - "5002:5002"
-    volumes:
-      - .:/app                    # 🔥 bind mount — live code editing (dev only!)
+      - .:/app
     depends_on:
       - db
 
   db:
     image: mysql:5.7
-    env_file:
-      - .env                      # 🔒 secure password storage
+    environment:
+      MYSQL_ROOT_PASSWORD: password
     volumes:
-      - db-data:/var/lib/mysql    # 💾 persistent database data
+      - db-data:/var/lib/mysql
 
 volumes:
   db-data:
 ```
 
-Your `.env` file (never commit to GitHub!):
-```bash
-MYSQL_ROOT_PASSWORD=Str0ng$ecureP@ssword123!
-```
+Your team lead looks at this and says:
+*"This is great for development but you need to make two changes before this goes to production!"*
 
-**Changes needed before going to production:**
+**What are the two changes?**
 
-| Change | Why |
-|--------|-----|
-| Remove `- .:/app` bind mount | Don't want live code editing in production — bake code into image! |
-| Use `env_file` not hardcoded password | Never expose secrets in your compose file |
-| Never add `ports:` to db | Database must always be hidden from internet |
+- A) Change the MySQL password and remove depends_on
+- B) Remove the bind mount on web and add ports to the db service
+- C) Remove the bind mount on web since you don't want live code editing in production, and make the password stronger using an env file
+- D) Change the image version and remove the volumes section
 
 ---
 
-## docker compose down vs down -v
+### Question 7 — The Big One 🌶️🌶️🌶️🔥
 
-This is critical to understand:
+Your manager gives you these requirements:
 
-```bash
-# Stops and removes containers — volumes SAFE ✅
-docker compose down
+> *"Set up a complete development environment for a Flask MySQL app. Developers need to edit code and see changes instantly. Database data must persist between restarts. Password must be stored securely. Database must be hidden from internet!"*
 
-# Stops, removes containers AND deletes volumes ❌
-docker compose down -v
-```
+**Which docker-compose.yml meets ALL requirements?**
 
-```
-docker compose down      → containers gone, data SAFE ✅
-docker compose down -v   → containers gone, data GONE ❌
-```
-
-> ⚠️ **Never run `docker compose down -v` in production** unless you absolutely want to wipe all data — it's the nuclear option!
-
----
-
-## What You Proved Hands On 🛠️
-
-### Mission 2 — Named volumes survive container deletion
-```bash
-# Write data into volume
-docker run --rm -v my-test-data:/data ubuntu \
-  bash -c "echo 'Hello!' > /data/test.txt"
-
-# Delete container (--rm auto-deletes it)
-# Volume still exists!
-
-# Read data from fresh container
-docker run --rm -v my-test-data:/data ubuntu cat /data/test.txt
-# Output: Hello! ✅
-```
-
-### Mission 3 — Database data survives container deletion
-```bash
-# Start MySQL with volume
-docker run -d --name my-mysql \
-  -e MYSQL_ROOT_PASSWORD=password \
-  -v mysql-data:/var/lib/mysql \
-  mysql:5.7
-
-# Add data, then delete container
-docker rm -f my-mysql
-
-# Start brand new container with SAME volume
-docker run -d --name my-mysql-new \
-  -e MYSQL_ROOT_PASSWORD=password \
-  -v mysql-data:/var/lib/mysql \
-  mysql:5.7
-
-# Data still there! ✅
-```
-
-### Mission 4 — Bind mount for live development
+**Option A:**
 ```yaml
-# In docker-compose.yml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5002:5002"
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/mysql
 volumes:
-  - .:/app    # edit on laptop → instant changes in container!
+  db-data:
+```
+
+**Option B:**
+```yaml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5002:5002"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/mysql
+volumes:
+  db-data:
+```
+
+**Option C:**
+```yaml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5002:5002"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - db-data:/var/lib/mysql
+volumes:
+  db-data:
+```
+
+**Option D:**
+```yaml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5002:5002"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    env_file:
+      - .env
+volumes:
+  db-data:
 ```
 
 ---
+---
 
-## Common Mistakes ⚠️
+## ✅ Answers & Explanations
 
-- ❌ No volume on database container — all data lost on container deletion!
-- ❌ Defining volume in service but forgetting to declare it under `volumes:` at the bottom
-- ❌ Using bind mounts in production — code should be baked into the image
-- ❌ Hardcoding passwords — always use `env_file` and `.env` files
-- ❌ Running `docker compose down -v` accidentally — deletes all volume data!
-- ❌ Expecting volumes to appear in your normal laptop folders — Docker manages its own storage area
+> ⚠️ **Spoiler Warning** — make sure you've attempted all questions before reading on!
 
 ---
 
-## Quick Summary 📋
+### Question 1 — Answer: B) They are completely gone
 
-| Concept | Key Point |
-|---------|-----------|
-| Volume | Docker managed — data lives outside container — survives deletion |
-| Bind Mount | Your folder mounted into container — great for live dev |
-| tmpfs | Memory only — gone when container stops |
-| `-v name:/path` | Docker volume |
-| `-v /path:/path` | Bind mount |
-| `docker compose down` | Volumes safe ✅ |
-| `docker compose down -v` | Volumes deleted ❌ |
-| Two parts needed | Mount in service AND define under `volumes:` |
-| Production rule | Use volumes for db, no bind mounts, secrets in `.env` |
+**Explanation:**
+No volume = data lives and dies with the container. Those 1000 records are gone forever the moment the container is deleted!
+
+```
+No volume → container deleted → data deleted 💥
+With volume → container deleted → data safe in volume ✅
+```
+
+> 🧠 This is why every production database always uses a volume — you never want your data living inside a container!
+
+---
+
+### Question 2 — Answer: B) Command A = Docker volume. Command B = Bind mount
+
+**Explanation:**
+The key is what's on the **left side** of the colon:
+
+```bash
+-v my-data:/var/lib/mysql              # left = name → Docker Volume ✅
+-v /home/ansaff/mydata:/var/lib/mysql  # left = path → Bind Mount ✅
+```
+
+> 🧠 Easy way to remember — starts with `/` → bind mount. Just a name → Docker volume!
+
+---
+
+### Question 3 — Answer: B) Bind Mount
+
+**Explanation:**
+A bind mount mounts your laptop folder directly into the container:
+
+```yaml
+volumes:
+  - .:/app    # your laptop folder → mounted into /app in container
+              # edit on laptop → container sees it instantly!
+```
+
+> 🔥 **Rule of thumb:**
+> - Bind mount → development (live code editing)
+> - Volume → production (persistent database data)
+
+---
+
+### Question 4 — Answer: B) Yes — volume persists data after docker compose down
+
+**Explanation:**
+This is a trick question! The key difference is:
+
+```bash
+docker compose down      # containers deleted — volumes SAFE ✅
+docker compose down -v   # containers deleted — volumes GONE ❌
+```
+
+The `-v` flag is what deletes volumes. Without it volumes are always safe!
+
+> ⚠️ Never run `docker compose down -v` in production — it's the nuclear option!
+
+---
+
+### Question 5 — Answer: B) Volume defined in service but not declared at bottom
+
+**Explanation:**
+Two parts are always required for volumes in Docker Compose:
+
+```yaml
+# ❌ Incomplete — missing bottom section!
+services:
+  db:
+    volumes:
+      - db-data:/var/lib/mysql  # referenced but never defined!
+
+# ✅ Complete — both parts present!
+services:
+  db:
+    volumes:
+      - db-data:/var/lib/mysql  # PART 1 — mount into service
+
+volumes:
+  db-data:                      # PART 2 — define it here!
+```
+
+> 🧠 Think of it like declaring a variable in code — you can't use something you haven't defined!
+
+---
+
+### Question 6 — Answer: C) Remove bind mount and use env file for password
+
+**Explanation:**
+Two critical production changes:
+
+**1. Remove the bind mount:**
+```yaml
+# Remove this for production!
+volumes:
+  - .:/app    # live code editing not needed in production
+              # code should be baked into the image via Dockerfile!
+```
+
+**2. Never hardcode passwords:**
+```yaml
+# ❌ Development
+environment:
+  MYSQL_ROOT_PASSWORD: password
+
+# ✅ Production
+env_file:
+  - .env      # store secrets here — never commit to GitHub!
+```
+
+> 🔒 **Golden rule:** Never commit passwords, API keys or secrets to GitHub — ever!
+
+---
+
+### Question 7 — Answer: B
+
+**Explanation:**
+
+Checking each requirement against Option B:
+
+```yaml
+web:
+  volumes:
+    - .:/app              # ✅ bind mount — live code editing!
+
+db:
+  env_file:
+    - .env                # ✅ password stored securely!
+  volumes:
+    - db-data:/var/lib/mysql  # ✅ data persists!
+                              # ✅ no ports on db — hidden!
+volumes:
+  db-data:                # ✅ volume properly defined!
+```
+
+Why the others fail:
+- **Option A ❌** — No bind mount on web + db has `-p 3306:3306` exposing it publicly!
+- **Option C ❌** — Password hardcoded in environment — not secure!
+- **Option D ❌** — Volume `db-data` defined at bottom but never mounted in db service — data won't persist!
+
+---
+
+## 💡 Key Takeaways
+
+- 💥 **No volume = data lost** when container is deleted — always use volumes for databases!
+- 🔑 **Volume vs Bind Mount** — name = Docker volume, path starting with `/` = bind mount
+- 🔥 **Bind mounts for dev** — edit code on laptop, changes appear instantly in container
+- 💾 **Volumes for production** — persistent, Docker managed, survives container deletion
+- ⚠️ **Two parts needed** — mount in service AND declare under `volumes:` at the bottom
+- 🛡️ **docker compose down** — volumes safe. `docker compose down -v` — volumes gone!
+- 🔒 **Never hardcode passwords** — always use `env_file` and `.env` files
+- 🚫 **Remove bind mounts in production** — code should be baked into the Docker image
 
 ---
 
