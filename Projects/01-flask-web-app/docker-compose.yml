@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    networks:
+      - flask-redis
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - r_data:/data
+    networks:
+      - flask-redis
+
+networks:
+  flask-redis:
+
+volumes:
+  r_data:
