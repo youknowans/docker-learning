@@ -15,23 +15,26 @@ This repo contains my notes, commands, and hands-on projects as I work through D
 ```
 docker-learning/
 │
-├── README.md                  ← You are here!
+├── README.md                           ← You are here!
 │
 ├── notes/
-│   ├── 01-core-concepts.md    ← What Docker is and key concepts
-│   ├── 02-basic-commands.md   ← Essential Docker commands
-│   ├── 03-dockerfile.md       ← Writing Dockerfiles
-│   └── 04-docker-compose.md   ← Running multiple containers
-│ 
+│   ├── 01-core-concepts.md             ← What Docker is and key concepts
+│   ├── 02-basic-commands.md            ← Essential Docker commands
+│   ├── 03-docker-networking.md         ← Networks, bridge, custom networks
+│   ├── 04-docker-compose.md            ← Running multi-container apps
+│   ├── 05-docker-volumes.md            ← Persistent data storage
+│   └── 06-dockerfile-anatomy.md        ← Writing production Dockerfiles
+│
 ├── quizzes/
-│   ├── 01-core-concepts.md    ← What Docker is and key concepts
-│   ├── 02-basic-commands.md   ← Essential Docker commands
-│   ├── 03-dockerfile.md       ← Writing Dockerfile
+│   ├── 01-core-concepts-quiz.md        ← Core concepts self-test
+│   ├── 02-basic-commands-quiz.md       ← Commands self-test
+│   ├── 03-docker-networking-quiz.md    ← Networking self-test
+│   ├── 04-docker-compose-quiz.md       ← Compose self-test
+│   ├── 05-docker-volumes-quiz.md       ← Volumes self-test
+│   └── 06-dockerfile-anatomy-quiz.md   ← Dockerfile self-test
 │
 ├── projects/
-│   └── nginx-container/       ← Hands on projects
-│
-└── cheatsheet.md              ← Quick reference commands
+│   └── flask-redis/                    ← Flask + Redis with persistent volume
 ```
 
 ---
