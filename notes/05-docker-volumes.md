@@ -320,4 +320,4 @@ volumes:
 
 ---
 
-*Next up → [06 - CI/CD Pipelines](./06-docker-file.md)* 🚀
+*Next up → [06 - Dockerfile](./06-docker-file.md)* 🚀
